@@ -1,0 +1,261 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+```{r warning=FALSE}
+library(dplyr)
+library(psych)
+library(leaflet)
+
+Folder<-"https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/"
+
+```
+
+```{r max.height='250px'}
+dat_hostel<-read.csv(paste0(Folder,"Hostel.csv"),stringsAsFactors = F)
+dim(dat_hostel)
+dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
+dat_hostel$lon[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-135.4756563455386
+dat_hostel$lat[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-34.74883461136703
+
+dat_hostel$lon[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-135.50494191623136
+dat_hostel$lat[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-34.66842726841171
+
+dat_hostel$lon[dat_hostel$hostel.name=="Goen Loungeï¼†Stay" & dat_hostel$City=="Osaka"]<-135.65050963620374
+dat_hostel$lat[dat_hostel$hostel.name=="Goen Loungeï¼†Stay" & dat_hostel$City=="Osaka"]<-34.815576171143135
+
+dim(dat_hostel)
+```
+
+```{r}
+
+summarise(group_by(dat_hostel,City),`Hostel Count`=n())
+
+
+
+```
+
+```{r max.height='250px'}
+
+col_select<-c("Distance","summary.score","atmosphere","cleanliness"
+              ,"facilities","location.y","security","staff","valueformoney","lat","lon")
+
+func_norm<-function(x){
+  x_mean=mean(x,na.rm = T)
+  sd_mean=sd(x,na.rm = T)
+  
+  return((x-x_mean)/sd_mean)
+  
+}
+
+dat_hostel<-filter(dat_hostel,price.from!=1003200)
+
+dat_tk<-filter(dat_hostel,City=="Tokyo",price.from!=1003200)
+dat_os<-filter(dat_hostel,City=="Osaka",price.from!=1003200)
+dat_ky<-filter(dat_hostel,City=="Kyoto",price.from!=1003200)
+dat_hs<-filter(dat_hostel,City=="Hiroshima",price.from!=1003200)
+dat_fc<-filter(dat_hostel,City=="Hiroshima",price.from!=1003200)
+
+dat_tk2<-mutate_at(dat_tk,col_select,func_norm)
+dat_os2<-mutate_at(dat_os,col_select,func_norm)
+dat_ky2<-mutate_at(dat_ky,col_select,func_norm)
+dat_hs2<-mutate_at(dat_hs,col_select,func_norm)
+dat_fc2<-mutate_at(dat_fc,col_select,func_norm)
+
+
+dat_tk2
+dat_os2
+dat_ky2
+
+filter(dat_tk2,abs(lon)>3 | abs(lat)>3)
+filter(dat_os2,abs(lon)>3 | abs(lat)>3)
+filter(dat_ky2,abs(lon)>3 | abs(lat)>3)
+filter(dat_hs2,abs(lon)>3 | abs(lat)>3)
+filter(dat_fc2,abs(lon)>3 | abs(lat)>3)
+
+
+
+plot(dat_os$lat,dat_os2$lon)
+
+filter(dat_os,lat>=34.8)
+
+library(ggplot2)
+ggplot(dat_hostel, aes(x=summary.score, y=price.from,col=City)) + geom_point()
+
+```
+
+
+```{r}
+
+
+
+dat_tk_pca<-principal(select(dat_tk2,col_select[col_select!="summary.score"]),nfactors = 10)
+cumsum(dat_tk_pca$Vaccounted[2,])
+dat_tk_pca$loadings
+
+
+```
+
+```{r}
+func_cs_tk<-function(dat2,dat,hostel,s1,s2){
+  
+  dat2<-dat2[dat2$summary.score>=s1 & dat2$summary.score<=s2,]
+  dat<-dat[dat2$summary.score>=s1 & dat2$summary.score<=s2,]
+  
+  a<-select(filter(dat,hostel.name==hostel)
+            ,Distance
+            #,summary.score
+            #,atmosphere
+            ,cleanliness
+            #,facilities
+            ,location.y
+            #,security
+            ,staff
+            ,valueformoney
+            ,lat
+            ,lon
+            )
+  
+
+  b<-select(filter(dat,hostel.name!=hostel)
+            ,Distance
+            #,summary.score
+            #,atmosphere
+            ,cleanliness
+            #,facilities
+            ,location.y
+            #,security
+            ,staff
+            ,valueformoney
+            ,lat
+            ,lon
+            )
+  
+  a<-do.call(rbind,replicate(dim(b)[1],a,simplify = F))
+  
+  det_a=sqrt(rowSums(a^2))
+  det_b=sqrt(rowSums(b^2))
+  
+  cs<-rowSums(a*b)/det_a/det_b
+  
+  #print(cs[order(cs,decreasing = T)])
+  
+  #rbind.data.frame(filter(dat2,hostel.name==hostel)
+  #,filter(dat2,hostel.name!=hostel)[order(cs,decreasing = T),])
+  
+  top10<-filter(dat2,hostel.name!=hostel)[order(cs,decreasing = T)[1:min(length(cs),10)],]
+  target<-filter(dat2,hostel.name==hostel)
+  
+  #top_5_plow<-top10[top10$price.from<target$price.from,]
+  #top_5_phigh<-top10[top10$price.from>target$price.from,]
+  #top_5_psame<-top10[top10$price.from==target$price.from,]
+
+  top10<-mutate(top10,colour=if_else(price.from<target$price.from,"green"
+                                     ,if_else(price.from>target$price.from,"red","blue")
+                                     )
+               ,comment=paste0("<b>",hostel.name,"</b>"
+                               ,"<br/>Min Price: ",price.from
+                               ,if_else(price.from<target$price.from
+                                        ,paste0("<br/>[ ",target$price.from-price.from," cheaper than "
+                                                ,target$hostel.name," ]")
+                                        ,if_else(price.from>target$price.from
+                                                 ,paste0("<br/>[ ",price.from-target$price.from
+                                                         ," more expensive than "
+                                                         ,target$hostel.name," ]")
+                                                 ,paste0("Same price as ",target$hostel.name)
+                                        )
+                               )
+               )
+  )
+
+  
+  
+  #func_nf<-function(data,)
+  
+  
+  #if (dim(top_5_plow)[1]>0){
+  #  top_5_plow$comment<-paste0("<b>",top_5_plow$hostel.name[1],"</b><br/>"
+  #                       ,"Min Price: ",top_5_plow$price.from[1]
+  #                       ," [",target$price.from-top_5_plow$price.from[1]," cheaper from ",target$hostel.name[1]," ]"
+  #                       )
+  #  top_5_plow$colour<-"green"
+  #}else{
+  #  top_5_plow$comment<-c()
+  #  top_5_plow$colour<-c()
+  #}
+  
+  #if (dim(top_5_phigh)[1]>0){
+  #  top_5_phigh$comment<-paste0("<b>",top_5_phigh$hostel.name[1],"</b><br/>"
+  #                       ,"Min Price: ",top_5_phigh$price.from[1]
+  #                       ," [",target$price.from-top_5_phigh$price.from[1]," cheaper from ",target$hostel.name[1]," ]"
+  #                       )
+  #  top_5_phigh$colour<-"red"
+  #}else{
+  #  top_5_phigh$comment<-c()
+  #  top_5_phigh$colour<-c()
+  #}
+  
+  #if (dim(top_5_psame)[1]>0){  
+  #  top_5_psame$comment<-paste0("<b>",top_5_psame$hostel.name,"</b><br/>"
+  #                       ,"Min Price: ",top_5_psame$price.from
+  #                       )
+  #  top_5_psame$colour<-"blue"
+  #}else{
+  #  top_5_psame$comment<-c()
+  #  top_5_psame$colour<-c()
+#  }
+  
+  
+  
+  
+  
+  top10<-rbind.data.frame(cbind.data.frame(target,colour="black"
+                                          ,comment=paste0("<b>",target$hostel.name,"</b><br/>"
+                                                          ,"Min Price: ",target$price.from)
+                                          )
+                         ,top10
+                         #,top_5_plow
+                         #,top_5_phigh
+                         #,top_5_psame
+                         )
+
+  
+  icons <- awesomeIcons(
+  icon = 'ios-close',
+  iconColor = 'black',
+  library = 'ion',
+  markerColor = top10$colour
+  )
+  
+  icons2 <- awesomeIcons(
+  icon = 'ios-close',
+  iconColor = 'black',
+  library = 'ion',
+  markerColor = "white"
+  )
+  
+  #print(top10)
+  M<-addAwesomeMarkers(addTiles(leaflet()),lng=dat2$lon, lat=dat2$lat,icon=icons2)
+  addAwesomeMarkers(M,lng=top10$lon, lat=top10$lat, popup=top10$comment,icon=icons)
+   
+}
+
+func_cs_tk(dat_tk,dat_tk2,"Toco Tokyo Heritage Hostel",0,10)
+func_cs_tk(dat_tk,dat_tk2,"Oak Hostel Zen",9,10)
+func_cs_tk(dat_tk,dat_tk2,"Guesthouse Kagaribi",0,10)
+func_cs_tk(dat_tk,dat_tk2,"Hiromas Hostel in Akiba",0,10)
+func_cs_tk(dat_tk,dat_tk2,"RYOKANï¼†HOSTEL WASABI Nippori",0,10)
+
+
+```
+
+
+```{r}
+paste0(dat_ky2$hostel.name,dat_ky2$price.from)
+```
+

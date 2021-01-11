@@ -2,8 +2,15 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 
-Folder<-"C:/Users/Gigabyte/Google Drive/04 Master DS/WQD7001 PRINCIPLES OF DATA SCIENCE/Group Assignment/"
+Folder<-"https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/"
 dat_hostel<-read.csv(paste0(Folder,"Hostel.csv"),stringsAsFactors = F)
+
+dat_hostel$lon[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-135.4756563455386
+dat_hostel$lat[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-34.74883461136703
+
+dat_hostel$lon[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-135.50494191623136
+dat_hostel$lat[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-34.66842726841171
+
 dim(dat_hostel)
 dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
 dat_hostel
@@ -29,25 +36,32 @@ server<-shinyServer(function(input,output){
   
   dat_temp<-reactive({
     if (input$city=="All"){
-      dat_hostel
+      
+      
+      filter(dat_hostel
+             ,cleanliness<=input$CL[2]
+             ,cleanliness>input$CL[1]
+      )
+      
     }else{
-      filter(dat_hostel,City==input$city)
+      filter(dat_hostel,City==input$city             
+             ,cleanliness<=input$CL[2]
+             ,cleanliness>input$CL[1])
     }
   }
+  
+  
   )
   
-  dat_temp2<-reactive({filter(dat_temp()
-                            ,cleanliness<=input$CL[2]
-                            ,cleanliness>input$CL[1]
-  )
-    }
-  )
   #dat_temp2<-reactive({select(dat_temp(),-lon:lat)})
-  output$out<-renderTable(reactive({select(dat_temp2(),-lon,-lat,-Distance)})())
+  output$out<-renderTable(reactive({select(dat_temp()
+                                           ,-lon,-lat
+                                           ,-Distance)})())
   output$mymap<-renderLeaflet(
     addAwesomeMarkers(addTiles(leaflet())
-                      ,lng=dat_temp2()$lon
-                      ,lat=dat_temp2()$lat)
+                      ,lng=dat_temp()$lon
+                      ,lat=dat_temp()$lat
+                      ,popup="abc")
   )
   #output$out2<-renderText(input$CL[1])
   
