@@ -30,8 +30,9 @@ ui <- shinyUI(fluidPage(
                                 sliderInput("RS","Rating Score :",min=1,max=10,value = c(1,10),step=0.1),
                                 sliderInput("VM","Value for Money :",min=1,max=10,value = c(1,10),step=0.1)
                                               ),
-                                mainPanel(leafletOutput("mymap",width="100%",height=800),
+                                mainPanel(leafletOutput("mymap",width="100%",height=600),
                                           fluidRow(verbatimTextOutput("map_marker_click"))
+
                                           )
                                  ),
                    ),

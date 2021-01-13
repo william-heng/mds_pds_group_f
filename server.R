@@ -2,7 +2,7 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 
-dat_hostel<-read.csv(file = "Hostel.csv",stringsAsFactors = F)
+dat_hostel<-read.csv(file = "https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Hostel.csv",stringsAsFactors = F)
 dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
 dat_hostel<-filter(dat_hostel,price.from!=1003200)
 
@@ -62,25 +62,41 @@ server <- shinyServer(function(input,output,session){
                               ,ValueForMoney<=input$VM[2]
                               ,ValueForMoney>input$VM[1])})
   
-  output$out<-renderTable(reactive({select(dat_temp4(),-lon,-lat,-Distance)})())
-  output$mymap<-renderLeaflet(addAwesomeMarkers(addTiles(leaflet())
-                      ,lng=dat_temp4()$lon
-                      ,lat=dat_temp4()$lat
+  dat_temp5<-reactive({mutate(dat_temp4()
+                              ,col=if_else(StartingPrice>quantile(StartingPrice,0.75,na.rm = T)
+                                           ,"Red"
+                                           ,if_else(StartingPrice<quantile(StartingPrice,0.25,na.rm = T)
+                                                    ,"green","blue"
+                                                    )
+                                           ))})
+
+  
+  output$out<-renderTable(reactive({select(dat_temp5(),-lon,-lat,-Distance)})())
+  output$mymap<-renderLeaflet(addLegend(addAwesomeMarkers(addTiles(leaflet())
+                      ,lng=dat_temp5()$lon
+                      ,lat=dat_temp5()$lat
                       ,icon = awesomeIcons(icon = "ios-home", library = 'ion'
                                            ,iconColor = "#ffffff"
-                                           ,markerColor = "blue")
+                                           ,markerColor = dat_temp5()$col)
                       ,popup=paste("Hostel Name : "
-                                   ,dat_temp4()$HostelName,"<br>","Starting Price : "
-                                   ,dat_temp4()$StartingPrice,"<br>","Rating Score : "
-                                   ,dat_temp4()$RatingScore,"<br>","Value for Money : "
-                                   ,dat_temp4()$ValueForMoney,"<br>","Cleanliness : "
-                                   ,dat_temp4()$Cleanliness,"<br>","Security : "
-                                   ,dat_temp4()$Security,"<br>","Atmosphere : "
-                                   ,dat_temp4()$Atmosphere,"<br>","Staff : "
-                                   ,dat_temp4()$Staff
+                                   ,dat_temp5()$HostelName,"<br>","Starting Price : "
+                                   ,dat_temp5()$StartingPrice,"<br>","Rating Score : "
+                                   ,dat_temp5()$RatingScore,"<br>","Value for Money : "
+                                   ,dat_temp5()$ValueForMoney,"<br>","Cleanliness : "
+                                   ,dat_temp5()$Cleanliness,"<br>","Security : "
+                                   ,dat_temp5()$Security,"<br>","Atmosphere : "
+                                   ,dat_temp5()$Atmosphere,"<br>","Staff : "
+                                   ,dat_temp5()$Staff
                                    )
                       )
+                      ,position = "bottomright",title="Prices within the selection",labFormat = labelFormat()
+                      ,colors=c("red","blue","green")
+                      ,labels=c("Top 20% most expensive"
+                                ,"Normal Price Range"
+                                ,"Bottom 20% cheapest")
                       )
+                      )
+  
   output$table <- renderDataTable({dat_hostel})
   output$plot <- renderPlot(ggplot(dat_hostel, aes(x=StartingPrice, y=RatingScore,col=City)) + geom_point(size=5)+ labs(y="Rating Score", x = "Starting Price")+ggtitle("Distribution of Hostel based on Starting Price and Rating Score"))
 }
