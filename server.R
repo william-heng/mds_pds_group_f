@@ -103,75 +103,93 @@ server <- shinyServer(function(input,output,session){
     if (input$Plot_Select=="Rating Score"){
     ggplot(dat_hostel, aes(y=RatingScore, x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y="Rating Score")+
-        ggtitle("Distribution of Hostel based on Starting Price and Rating Score")+
+        ggtitle("Beeswam Plot: Rating Score")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
         )     
     }else if(input$Plot_Select=="Cleanliness"){
       ggplot(dat_hostel, aes(y=Cleanliness, x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y="Cleanliness")+
-        ggtitle("Distribution of Hostel based on Starting Price and Cleanliness Score")+
+        ggtitle("Beeswam Plot: Cleanliness Score")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
         )     
     }else if(input$Plot_Select=="Atmosphere"){
       ggplot(dat_hostel, aes(y=Atmosphere, x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y="Atmosphere")+
-        ggtitle("Distribution of Hostel based on Starting Price and Atmosphere Score")+
+        ggtitle("Beeswam Plot: Atmosphere Score")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
         )           
     }else if(input$Plot_Select=="Facilities"){
       ggplot(dat_hostel, aes(y=Facilities  , x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y="Facilities")+
-        ggtitle("Distribution of Hostel based on Starting Price and Facilities Score")+
+        ggtitle("Beeswam Plot: Facilities Score")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
         )           
     }else if(input$Plot_Select=="Security"){
       ggplot(dat_hostel, aes(y=Security, x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y="Security")+
-        ggtitle("Distribution of Hostel based on Starting Price and Security Score")+
+        ggtitle("Beeswam Plot: Security Score")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
         )         
     }else if(input$Plot_Select=="Location"){
       ggplot(dat_hostel, aes(y=Location, x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y="Location")+
-        ggtitle("Distribution of Hostel based on Starting Price and Location Score")+
+        ggtitle("Beeswam Plot: Location Score")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
         )      
     }else if(input$Plot_Select=="Staff"){
       ggplot(dat_hostel, aes(y=Staff, x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y="Staff")+
-        ggtitle("Distribution of Hostel based on Starting Price and Staff Score")+
+        ggtitle("Beeswam Plot: Staff Score")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
         )           
     }else if(input$Plot_Select=="Starting Price"){
       ggplot(dat_hostel, aes(y=StartingPrice, x=City,col=City)) + 
-        geom_beeswarm(size=5)+ labs(y="Starting Price")+
-        ggtitle("Distribution of Hostel based on Starting Price and Staff Score")+
+        geom_beeswarm(size=5)+ labs(y = "Starting Price")+
+        ggtitle("Beeswam Plot: Starting Prince")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)
               ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
               )      
+    }else if(input$Plot_Select=="Distance to City Centre"){
+      ggplot(dat_hostel, aes(y=Distance, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y = "Distance to City Centre (km)")+
+        ggtitle("Beeswam Plot: Distance to City Centre")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
+        )      
     }
     
   })
