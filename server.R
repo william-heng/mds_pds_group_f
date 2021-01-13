@@ -1,6 +1,7 @@
 library(shiny)
 library(leaflet)
 library(dplyr)
+library(ggbeeswarm)
 
 dat_hostel<-read.csv(file = "https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Hostel.csv",stringsAsFactors = F)
 dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
@@ -97,7 +98,82 @@ server <- shinyServer(function(input,output,session){
                       )
                       )
   
-  output$table <- renderDataTable({dat_hostel})
-  output$plot <- renderPlot(ggplot(dat_hostel, aes(x=StartingPrice, y=RatingScore,col=City)) + geom_point(size=5)+ labs(y="Rating Score", x = "Starting Price")+ggtitle("Distribution of Hostel based on Starting Price and Rating Score"))
+  output$table <- renderDataTable({dat_hostel},options = list(pageLength = 10))
+  output$plot <- renderPlot({
+    if (input$Plot_Select=="Rating Score"){
+    ggplot(dat_hostel, aes(y=RatingScore, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Rating Score")+
+        ggtitle("Distribution of Hostel based on Starting Price and Rating Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+        )     
+    }else if(input$Plot_Select=="Cleanliness"){
+      ggplot(dat_hostel, aes(y=Cleanliness, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Cleanliness")+
+        ggtitle("Distribution of Hostel based on Starting Price and Cleanliness Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+        )     
+    }else if(input$Plot_Select=="Atmosphere"){
+      ggplot(dat_hostel, aes(y=Atmosphere, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Atmosphere")+
+        ggtitle("Distribution of Hostel based on Starting Price and Atmosphere Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+        )           
+    }else if(input$Plot_Select=="Facilities"){
+      ggplot(dat_hostel, aes(y=Facilities  , x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Facilities")+
+        ggtitle("Distribution of Hostel based on Starting Price and Facilities Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+        )           
+    }else if(input$Plot_Select=="Security"){
+      ggplot(dat_hostel, aes(y=Security, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Security")+
+        ggtitle("Distribution of Hostel based on Starting Price and Security Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+        )         
+    }else if(input$Plot_Select=="Location"){
+      ggplot(dat_hostel, aes(y=Location, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Location")+
+        ggtitle("Distribution of Hostel based on Starting Price and Location Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+        )      
+    }else if(input$Plot_Select=="Staff"){
+      ggplot(dat_hostel, aes(y=Staff, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Staff")+
+        ggtitle("Distribution of Hostel based on Starting Price and Staff Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+        )           
+    }else if(input$Plot_Select=="Starting Price"){
+      ggplot(dat_hostel, aes(y=StartingPrice, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y="Starting Price")+
+        ggtitle("Distribution of Hostel based on Starting Price and Staff Score")+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+              )      
+    }
+    
+  })
 }
 )

@@ -5,7 +5,7 @@ output:
     df_print: paged
 ---
 
-
+![width](C:/Users/Gigabyte/Google Drive/04 Master DS/WQD7001 PRINCIPLES OF DATA SCIENCE/Group Assignment/Find_Your_Hostel.JPG)
 
 ```{r warning=FALSE}
 library(dplyr)
