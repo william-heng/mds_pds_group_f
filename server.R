@@ -89,6 +89,7 @@ server <- shinyServer(function(input,output,session){
                                    ,dat_temp5()$Atmosphere,"<br>","Staff : "
                                    ,dat_temp5()$Staff
                                    )
+                      ,label=dat_temp5()$HostelName
                       )
                       ,position = "bottomright",title="Prices within the selection",labFormat = labelFormat()
                       ,colors=c("red","blue","green")

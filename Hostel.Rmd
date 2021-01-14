@@ -20,23 +20,74 @@ Folder<-"https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/"
 dat_hostel<-read.csv(paste0(Folder,"Hostel.csv"),stringsAsFactors = F)
 dim(dat_hostel)
 dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
+dat_hostel<-filter(dat_hostel,price.from!=1003200)
+
 dat_hostel$lon[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-135.4756563455386
 dat_hostel$lat[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-34.74883461136703
 
 dat_hostel$lon[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-135.50494191623136
 dat_hostel$lat[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-34.66842726841171
 
-dat_hostel$lon[dat_hostel$hostel.name=="Goen Loungeï¼†Stay" & dat_hostel$City=="Osaka"]<-135.65050963620374
-dat_hostel$lat[dat_hostel$hostel.name=="Goen Loungeï¼†Stay" & dat_hostel$City=="Osaka"]<-34.815576171143135
+dat_hostel <- dat_hostel %>% dplyr::rename(
+  HostelName = hostel.name,
+  StartingPrice = price.from,
+  RatingBand = rating.band,
+  RatingScore = summary.score,
+  Atmosphere = atmosphere,
+  Cleanliness = cleanliness,
+  Facilities = facilities,
+  Location = location.y,
+  Security = security,
+  Staff = staff,
+  ValueForMoney = valueformoney
+)
+
 
 dim(dat_hostel)
 ```
 
 ```{r}
 
+Folder2<-"C:/Users/Gigabyte/Google Drive/04 Master DS/WQD7001 PRINCIPLES OF DATA SCIENCE/Group Assignment/"
+
 summarise(group_by(dat_hostel,City),`Hostel Count`=n())
+```
 
 
+```{r}
+library(pracma)
+MS_TK<-read.csv(paste0(Folder2,"Tokyo Metro Station.csv"),stringsAsFactors = F)
+dat_tk<-filter(dat_hostel,City=="Tokyo")
+
+dat_temp<-data.frame()
+for(i in 1:dim(dat_tk)[1]){
+  for(j in 1:dim(MS_TK)[1]){
+  l1<-c(dat_tk$lat[i],dat_tk$lon[i])
+  l2<-c(MS_TK$lat[j],MS_TK$long[j])
+  
+  dat_temp<-rbind.data.frame(dat_temp
+                             ,cbind.data.frame(
+                               HostelName=dat_tk$HostelName[i]
+                               ,Station=MS_TK$Station[j]
+                               ,dist=haversine(l1,l2)
+                               )
+                             )
+  
+  }
+}
+
+unique(inner_join(dat_temp
+          ,summarise(group_by(dat_temp,HostelName),dist=min(dist))
+          ,by=c("HostelName","dist")
+))
+
+write.csv(dat_temp,paste0(Folder2,))
+
+plot(y=dat_temp$dist,x=1:dim(dat_temp)[1])
+
+unique(dat_temp[dat_temp$dist>100,"Station"])
+
+dim(dat_tk)
 
 ```
 
