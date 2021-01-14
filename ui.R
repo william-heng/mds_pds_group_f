@@ -11,6 +11,7 @@ ui <- shinyUI(fluidPage(
               ,wellPanel(tags$style(".well {background-color:rgba(255,255,255,0.7);}"
                                     ,type='text/css',".nav-tabs {font-size: 30px;font-weight: bold;}"
                                     ,'.nav-tabs {background-color:rgba(255,182,193,0.8);}'
+                                    ,".leaflet-popup-content-wrapper {font-size: 15px;}"
                                     )
                                     
                          ,fluidRow(column(width = 12,titlePanel("Japan Hostel Finder"),
@@ -64,7 +65,6 @@ ui <- shinyUI(fluidPage(
                                                                                   ,"Location"
                                                                                   ,"Security"
                                                                                   ,"Staff"
-                                                                                  ,"Starting Price"
                                                                                   )
                                                    , selectize = F,size=11
                                                    )

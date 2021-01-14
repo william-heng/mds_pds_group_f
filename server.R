@@ -4,6 +4,9 @@ library(dplyr)
 library(ggbeeswarm)
 
 dat_hostel<-read.csv(file = "https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Hostel.csv",stringsAsFactors = F)
+dat_metro<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Japan_Metro.csv")
+
+
 dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
 dat_hostel<-filter(dat_hostel,price.from!=1003200)
 
@@ -42,6 +45,10 @@ dat_hostel <- dat_hostel %>% dplyr::rename(
   ValueForMoney = valueformoney
 )
 
+names(dat_metro)[names(dat_metro)=="dist"]<-"Dist_Station"
+
+dat_hostel<-left_join(dat_hostel,dat_metro,by="HostelName")
+
 
 server <- shinyServer(function(input,output,session){
   # City selection
@@ -63,13 +70,24 @@ server <- shinyServer(function(input,output,session){
                               ,ValueForMoney<=input$VM[2]
                               ,ValueForMoney>input$VM[1])})
   
-  dat_temp5<-reactive({mutate(dat_temp4()
-                              ,col=if_else(StartingPrice>quantile(StartingPrice,0.75,na.rm = T)
+  dat_temp5<-reactive({if(dim(dat_temp4())[1]==0){
+    
+    data.frame(HostelName="There is no hostel that fulfill the criteria."
+               ,City=NA,StartingPrice=NA,Distance=NA,RatingScore=NA,RatingBand=NA, Atmosphere=NA,Cleanliness=NA
+               , Facilities=NA,Location=NA,Security=NA ,Staff=NA, ValueForMoney=NA,lon=136.757 ,lat=35.05808
+               ,Station=NA ,Dist_Station=NA )
+    
+    }else{mutate(dat_temp4()
+                ,col=if_else(StartingPrice>quantile(StartingPrice,0.75,na.rm = T)
                                            ,"Red"
                                            ,if_else(StartingPrice<quantile(StartingPrice,0.25,na.rm = T)
                                                     ,"green","blue"
                                                     )
-                                           ))})
+                             )
+                )
+      }
+    }
+    )
 
   
   output$out<-renderTable(reactive({select(dat_temp5(),-lon,-lat,-Distance)})())
@@ -79,7 +97,7 @@ server <- shinyServer(function(input,output,session){
                       ,icon = awesomeIcons(icon = "ios-home", library = 'ion'
                                            ,iconColor = "#ffffff"
                                            ,markerColor = dat_temp5()$col)
-                      ,popup=paste("Hostel Name : "
+                      ,popup=paste0("Hostel Name : "
                                    ,dat_temp5()$HostelName,"<br>","Starting Price : "
                                    ,dat_temp5()$StartingPrice,"<br>","Rating Score : "
                                    ,dat_temp5()$RatingScore,"<br>","Value for Money : "
@@ -87,11 +105,15 @@ server <- shinyServer(function(input,output,session){
                                    ,dat_temp5()$Cleanliness,"<br>","Security : "
                                    ,dat_temp5()$Security,"<br>","Atmosphere : "
                                    ,dat_temp5()$Atmosphere,"<br>","Staff : "
-                                   ,dat_temp5()$Staff
+                                   ,dat_temp5()$Staff,"<br>","Nearest Metro Stations : "
+                                   ,dat_temp5()$Station, " (",round(dat_temp5()$Dist_Station,2)," km)"
                                    )
                       ,label=dat_temp5()$HostelName
+                      ,labelOptions = labelOptions(textsize = "15px")
                       )
-                      ,position = "bottomright",title="Prices within the selection",labFormat = labelFormat()
+                      
+                      ,position = "bottomright",title="Prices within the selection"
+                      ,labFormat = labelFormat()
                       ,colors=c("red","blue","green")
                       ,labels=c("Top 20% most expensive"
                                 ,"Normal Price Range"
@@ -174,7 +196,7 @@ server <- shinyServer(function(input,output,session){
     }else if(input$Plot_Select=="Starting Price"){
       ggplot(dat_hostel, aes(y=StartingPrice, x=City,col=City)) + 
         geom_beeswarm(size=5)+ labs(y = "Starting Price")+
-        ggtitle("Beeswam Plot: Starting Prince")+
+        ggtitle("Beeswam Plot: Starting Price")+
         theme(axis.text=element_text(size=20)
               ,axis.title=element_text(size=30,face="bold")
               ,legend.title = element_text(size = 20)

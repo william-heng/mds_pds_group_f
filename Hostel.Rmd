@@ -57,7 +57,9 @@ summarise(group_by(dat_hostel,City),`Hostel Count`=n())
 ```{r}
 library(pracma)
 MS_TK<-read.csv(paste0(Folder2,"Tokyo Metro Station.csv"),stringsAsFactors = F)
+MS_OS<-read.csv(paste0(Folder2,"Osaka Metro Station_20210115.csv"),stringsAsFactors = F)
 dat_tk<-filter(dat_hostel,City=="Tokyo")
+dat_os<-filter(dat_hostel,City=="Osaka")
 
 dat_temp<-data.frame()
 for(i in 1:dim(dat_tk)[1]){
@@ -76,16 +78,32 @@ for(i in 1:dim(dat_tk)[1]){
   }
 }
 
-unique(inner_join(dat_temp
+for(i in 1:dim(dat_os)[1]){
+  for(j in 1:dim(MS_OS)[1]){
+  l1<-c(dat_os$lat[i],dat_os$lon[i])
+  l2<-c(MS_OS$lat[j],MS_OS$long[j])
+  
+  dat_temp<-rbind.data.frame(dat_temp
+                             ,cbind.data.frame(
+                               HostelName=dat_os$HostelName[i]
+                               ,Station=MS_OS$Station[j]
+                               ,dist=haversine(l1,l2)
+                               )
+                             )
+  
+  }
+}
+
+dat_temp<-unique(inner_join(dat_temp
           ,summarise(group_by(dat_temp,HostelName),dist=min(dist))
           ,by=c("HostelName","dist")
 ))
 
-write.csv(dat_temp,paste0(Folder2,))
+write.csv(dat_temp,paste0(Folder2,"mds_pds_group_f/Japan_Metro.csv"),row.names = F)
 
 plot(y=dat_temp$dist,x=1:dim(dat_temp)[1])
 
-unique(dat_temp[dat_temp$dist>100,"Station"])
+unique(dat_temp[dat_temp$dist>10,"Station"])
 
 dim(dat_tk)
 
