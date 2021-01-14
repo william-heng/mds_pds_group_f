@@ -60,10 +60,16 @@ MS_TK<-read.csv(paste0(Folder2,"Tokyo Metro Station.csv"),stringsAsFactors = F)
 MS_OS<-read.csv(paste0(Folder2,"Osaka Metro Station.csv"),stringsAsFactors = F)
 MS_KT<-read.csv(paste0(Folder2,"Kyoto Metro Station.csv"),stringsAsFactors = F)
 MS_KT<-MS_KT[apply(MS_KT,1,function(X) !any(is.na(X))),]
+MS_FK<-read.csv(paste0(Folder2,"Fukuoka Metro Station.csv"),stringsAsFactors = F)
+MS_FK<-MS_FK[apply(MS_FK,1,function(X) !any(is.na(X))),]
+MS_HS<-read.csv(paste0(Folder2,"Hiroshima Metro Station.csv"),stringsAsFactors = F)
+#MS_HS<-MS_HS[apply(MS_HS,1,function(X) !any(is.na(X))),]
 
 dat_tk<-filter(dat_hostel,City=="Tokyo")
 dat_os<-filter(dat_hostel,City=="Osaka")
 dat_kt<-filter(dat_hostel,City=="Kyoto")
+dat_fk<-filter(dat_hostel,City=="Fukuoka-City")
+dat_hs<-filter(dat_hostel,City=="Hiroshima")
 
 dat_temp<-data.frame()
 for(i in 1:dim(dat_tk)[1]){
@@ -107,6 +113,38 @@ for(i in 1:dim(dat_kt)[1]){
                              ,cbind.data.frame(
                                HostelName=dat_kt$HostelName[i]
                                ,Station=MS_KT$Station[j]
+                               ,dist=haversine(l1,l2)
+                               )
+                             )
+  
+  }
+}
+
+for(i in 1:dim(dat_fk)[1]){
+  for(j in 1:dim(MS_FK)[1]){
+  l1<-c(dat_fk$lat[i],dat_fk$lon[i])
+  l2<-c(MS_FK$lat[j],MS_FK$lon[j])
+  
+  dat_temp<-rbind.data.frame(dat_temp
+                             ,cbind.data.frame(
+                               HostelName=dat_fk$HostelName[i]
+                               ,Station=MS_FK$Station[j]
+                               ,dist=haversine(l1,l2)
+                               )
+                             )
+  
+  }
+}
+
+for(i in 1:dim(dat_hs)[1]){
+  for(j in 1:dim(MS_HS)[1]){
+  l1<-c(dat_hs$lat[i],dat_hs$lon[i])
+  l2<-c(MS_HS$lat[j],MS_HS$lon[j])
+  
+  dat_temp<-rbind.data.frame(dat_temp
+                             ,cbind.data.frame(
+                               HostelName=dat_hs$HostelName[i]
+                               ,Station=MS_HS$Station[j]
                                ,dist=haversine(l1,l2)
                                )
                              )
