@@ -91,7 +91,10 @@ server <- shinyServer(function(input,output,session){
 
   
   output$out<-renderTable(reactive({select(dat_temp5(),-lon,-lat,-Distance)})())
-  output$mymap<-renderLeaflet(addLegend(addAwesomeMarkers(addTiles(leaflet())
+  output$mymap<-renderLeaflet(addLegend(addAwesomeMarkers(addProviderTiles(leaflet()
+                                                                           ,provider = providers$Stamen.Toner
+                                                                           ,options = providerTileOptions(opacity = 0.6)
+                                                                           )
                       ,lng=dat_temp5()$lon
                       ,lat=dat_temp5()$lat
                       ,icon = awesomeIcons(icon = "ios-home", library = 'ion'
@@ -121,7 +124,44 @@ server <- shinyServer(function(input,output,session){
                       )
                       )
   
-  output$table <- renderDataTable({dat_hostel},options = list(pageLength = 10))
+  observeEvent(input$addPolylines , {
+    click <- input$mymap_shape_click
+    
+    print(click$id)
+    
+    if(is.null(click))
+      return()   
+    
+    #pulls lat and lon from shiny click event
+    lat <- click$lat
+    lon <- click$lng
+    
+    #puts lat and lon for click point into its own data frame
+    coords <- as.data.frame(cbind(lon, lat))
+    
+    #converts click point coordinate data frame into SP object, sets CRS
+    point <- SpatialPoints(coords)
+    proj4string(point) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+    
+    #retrieves country in which the click point resides, set CRS for country
+    selected <- ctry[point,]
+    proj4string(selected) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+    
+    proxy <- leafletProxy("map")
+    if(click$id == "Selected"){
+      proxy %>% removeShape(layerId = "Selected")
+    } else {
+      proxy %>% addPolygons(data = selected, 
+                            fillColor = "black",
+                            fillOpacity = 1, 
+                            color = "red",
+                            weight = 3, 
+                            stroke = T,
+                            layerId = "Selected")
+    } 
+  })
+  
+  output$table <- renderDataTable({dat_temp5()},options = list(pageLength = 10))
   output$plot <- renderPlot({
     if (input$Plot_Select=="Rating Score"){
     ggplot(dat_hostel, aes(y=RatingScore, x=City,col=City)) + 

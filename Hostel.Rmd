@@ -65,6 +65,7 @@ MS_FK<-MS_FK[apply(MS_FK,1,function(X) !any(is.na(X))),]
 MS_HS<-read.csv(paste0(Folder2,"Hiroshima Metro Station.csv"),stringsAsFactors = F)
 #MS_HS<-MS_HS[apply(MS_HS,1,function(X) !any(is.na(X))),]
 
+
 dat_tk<-filter(dat_hostel,City=="Tokyo")
 dat_os<-filter(dat_hostel,City=="Osaka")
 dat_kt<-filter(dat_hostel,City=="Kyoto")
