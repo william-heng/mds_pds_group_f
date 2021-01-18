@@ -6,6 +6,7 @@ library(ggbeeswarm)
 dat_hostel<-read.csv(file = "https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Hostel.csv",stringsAsFactors = F)
 dat_metro<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Japan_Metro.csv")
 
+dat_metro_ori<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Japan_Metro_Ori.csv")
 
 dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
 dat_hostel<-filter(dat_hostel,price.from!=1003200)
@@ -57,6 +58,11 @@ server <- shinyServer(function(input,output,session){
     else{filter(dat_hostel,City==input$city)}
     })
   
+  dat_temp_metro<-reactive({
+    if (input$city=="All"){dat_metro_ori}
+    else{filter(dat_metro_ori,City==input$city)}
+  })
+  
   # 1st layer filtering (Starting Price)
   dat_temp2<-reactive({filter(dat_temp()
                               ,StartingPrice<=input$SP[2]
@@ -91,17 +97,20 @@ server <- shinyServer(function(input,output,session){
 
   
   output$out<-renderTable(reactive({select(dat_temp5(),-lon,-lat,-Distance)})())
-  output$mymap<-renderLeaflet(addLegend(addAwesomeMarkers(addProviderTiles(leaflet()
-                                                                           ,provider = providers$Stamen.Toner
-                                                                           ,options = providerTileOptions(opacity = 0.6)
-                                                                           )
-                      ,lng=dat_temp5()$lon
-                      ,lat=dat_temp5()$lat
-                      ,icon = awesomeIcons(icon = "ios-home", library = 'ion'
-                                           ,iconColor = "#ffffff"
-                                           ,markerColor = dat_temp5()$col)
+  output$mymap<-renderLeaflet(
+    addLegend(
+      addCircleMarkers(
+        addAwesomeMarkers(
+          addProviderTiles(leaflet()
+                           ,provider = providers$Stamen.Toner
+                           ,options = providerTileOptions(opacity = 0.5))
+          ,lng=dat_temp5()$lon
+          ,lat=dat_temp5()$lat
+          ,icon = awesomeIcons(icon = "ios-home", library = 'ion'
+                               ,iconColor = "#ffffff"
+                               ,markerColor = dat_temp5()$col)
                       ,popup=paste0("Hostel Name : "
-                                   ,dat_temp5()$HostelName,"<br>","Starting Price : "
+                                    ,dat_temp5()$HostelName,"<br>","Starting Price : "
                                    ,dat_temp5()$StartingPrice,"<br>","Rating Score : "
                                    ,dat_temp5()$RatingScore,"<br>","Value for Money : "
                                    ,dat_temp5()$ValueForMoney,"<br>","Cleanliness : "
@@ -109,11 +118,10 @@ server <- shinyServer(function(input,output,session){
                                    ,dat_temp5()$Security,"<br>","Atmosphere : "
                                    ,dat_temp5()$Atmosphere,"<br>","Staff : "
                                    ,dat_temp5()$Staff,"<br>","Nearest Metro Stations : "
-                                   ,dat_temp5()$Station, " (",round(dat_temp5()$Dist_Station,2)," km)"
-                                   )
+                                   ,dat_temp5()$Station, " (",round(dat_temp5()$Dist_Station,2)," km)")
                       ,label=dat_temp5()$HostelName
                       ,labelOptions = labelOptions(textsize = "15px")
-                      )
+                      ),lng=dat_temp_metro()$lon,lat=dat_temp_metro()$lat,popup = dat_temp_metro()$Station,color = "black")
                       
                       ,position = "bottomright",title="Prices within the selection"
                       ,labFormat = labelFormat()
@@ -124,43 +132,56 @@ server <- shinyServer(function(input,output,session){
                       )
                       )
   
-  observeEvent(input$addPolylines , {
-    click <- input$mymap_shape_click
+  #output$mymap<-addPolylines(mymap,lat = c(131,135),lng = c(31,35),color = "red")
+  
+  #output$mymap<-addCircleMarkers(output$mymap,lng=dat_metro_ori$lon,lat=dat_metro_ori$lat)
+  #$addPolylines
+  #observeEvent(input , {
+    #click <- input$mymap_shape_click
     
-    print(click$id)
+    #print(click$id)
     
-    if(is.null(click))
-      return()   
-    
+    #if(is.null(click))
+    #  return()   
+    observe({
     #pulls lat and lon from shiny click event
-    lat <- click$lat
-    lon <- click$lng
+    #lat <- input$mymap_shape_click$lat
+    #lon <- input$mymap_shape_click$lng
     
     #puts lat and lon for click point into its own data frame
-    coords <- as.data.frame(cbind(lon, lat))
+    #coords <- as.data.frame(cbind(lon, lat))
     
     #converts click point coordinate data frame into SP object, sets CRS
-    point <- SpatialPoints(coords)
-    proj4string(point) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+    #point <- SpatialPoints(coords)
+    #proj4string(point) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
     
     #retrieves country in which the click point resides, set CRS for country
-    selected <- ctry[point,]
-    proj4string(selected) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+    #selected <- ctry[point,]
+    #proj4string(selected) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
     
-    proxy <- leafletProxy("map")
-    if(click$id == "Selected"){
-      proxy %>% removeShape(layerId = "Selected")
-    } else {
-      proxy %>% addPolygons(data = selected, 
-                            fillColor = "black",
-                            fillOpacity = 1, 
-                            color = "red",
-                            weight = 3, 
-                            stroke = T,
-                            layerId = "Selected")
-    } 
-  })
+    #proxy <- leafletProxy("mymap")
+    #if(click$id == "Selected"){
+    #  proxy %>% removeShape(layerId = "Selected")
+    #} else {
+    #  proxy %>% addPolygons(data = selected, 
+    #                        fillColor = "black",
+    #                        fillOpacity = 1, 
+    ##                        color = "red",
+    #                        weight = 3, 
+    #                        stroke = T,
+    #                        layerId = "Selected")
+    #} 
+    
+    #addPolylines(leafletProxy("mymap"),lat = c(131,135),lng = c(31,35),color = "red")
+    if(is.null(input$mymap_marker_click)){
+      return()
+    }else{
+      output$msg<-renderText({paste0("bac")})
+      addPolylines(leafletProxy("mymap"),lat = c(0,135),lng = c(0,35),color = "red")
+    }
+    })
   
+    
   output$table <- renderDataTable({dat_temp5()},options = list(pageLength = 10))
   output$plot <- renderPlot({
     if (input$Plot_Select=="Rating Score"){

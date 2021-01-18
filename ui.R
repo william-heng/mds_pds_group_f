@@ -50,9 +50,9 @@ ui <- shinyUI(fluidPage(
                      ,mainPanel(
                        fluidPage(
                          leafletOutput("mymap",width="100%",height=600)
-                         ,fluidRow(verbatimTextOutput("map_marker_click"))
+                         #,fluidRow(verbatimTextOutput("map_marker_click"))
                          ,fluidRow(hr())
-                         
+                         ,textOutput("msg")
                          )
                        )
                      )

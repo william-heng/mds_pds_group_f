@@ -83,6 +83,8 @@ for(i in 1:dim(dat_tk)[1]){
                                HostelName=dat_tk$HostelName[i]
                                ,Station=MS_TK$Station[j]
                                ,dist=haversine(l1,l2)
+                               ,lat_station=MS_TK$lat[j]
+                               ,lng_station=MS_TK$long[j]
                                )
                              )
   
@@ -99,6 +101,8 @@ for(i in 1:dim(dat_os)[1]){
                                HostelName=dat_os$HostelName[i]
                                ,Station=MS_OS$Station[j]
                                ,dist=haversine(l1,l2)
+                               ,lat_station=MS_OS$lat[j]
+                               ,lng_station=MS_OS$lon[j]
                                )
                              )
   
@@ -115,6 +119,8 @@ for(i in 1:dim(dat_kt)[1]){
                                HostelName=dat_kt$HostelName[i]
                                ,Station=MS_KT$Station[j]
                                ,dist=haversine(l1,l2)
+                               ,lat_station=MS_KT$lat[j]
+                               ,lng_station=MS_KT$lon[j]
                                )
                              )
   
@@ -131,6 +137,8 @@ for(i in 1:dim(dat_fk)[1]){
                                HostelName=dat_fk$HostelName[i]
                                ,Station=MS_FK$Station[j]
                                ,dist=haversine(l1,l2)
+                               ,lat_station=MS_FK$lat[j]
+                               ,lng_station=MS_FK$lon[j]
                                )
                              )
   
@@ -147,6 +155,8 @@ for(i in 1:dim(dat_hs)[1]){
                                HostelName=dat_hs$HostelName[i]
                                ,Station=MS_HS$Station[j]
                                ,dist=haversine(l1,l2)
+                               ,lat_station=MS_HS$lat[j]
+                               ,lng_station=MS_HS$lon[j]
                                )
                              )
   
