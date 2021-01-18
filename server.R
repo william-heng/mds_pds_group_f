@@ -99,7 +99,7 @@ server <- shinyServer(function(input,output,session){
   output$out<-renderTable(reactive({select(dat_temp5(),-lon,-lat,-Distance)})())
   output$mymap<-renderLeaflet(
     addLegend(
-      addCircleMarkers(
+      #addCircleMarkers(
         addAwesomeMarkers(
           addProviderTiles(leaflet()
                            ,provider = providers$Stamen.Toner
@@ -121,7 +121,9 @@ server <- shinyServer(function(input,output,session){
                                    ,dat_temp5()$Station, " (",round(dat_temp5()$Dist_Station,2)," km)")
                       ,label=dat_temp5()$HostelName
                       ,labelOptions = labelOptions(textsize = "15px")
-                      ),lng=dat_temp_metro()$lon,lat=dat_temp_metro()$lat,popup = dat_temp_metro()$Station,color = "black")
+                      )
+        #,lng=dat_temp_metro()$lon,lat=dat_temp_metro()$lat
+        #,popup = dat_temp_metro()$Station,color = "black")
                       
                       ,position = "bottomright",title="Prices within the selection"
                       ,labFormat = labelFormat()
@@ -132,54 +134,40 @@ server <- shinyServer(function(input,output,session){
                       )
                       )
   
-  #output$mymap<-addPolylines(mymap,lat = c(131,135),lng = c(31,35),color = "red")
-  
-  #output$mymap<-addCircleMarkers(output$mymap,lng=dat_metro_ori$lon,lat=dat_metro_ori$lat)
-  #$addPolylines
-  #observeEvent(input , {
-    #click <- input$mymap_shape_click
-    
-    #print(click$id)
-    
-    #if(is.null(click))
-    #  return()   
+ 
     observe({
-    #pulls lat and lon from shiny click event
-    #lat <- input$mymap_shape_click$lat
-    #lon <- input$mymap_shape_click$lng
-    
-    #puts lat and lon for click point into its own data frame
-    #coords <- as.data.frame(cbind(lon, lat))
-    
-    #converts click point coordinate data frame into SP object, sets CRS
-    #point <- SpatialPoints(coords)
-    #proj4string(point) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-    
-    #retrieves country in which the click point resides, set CRS for country
-    #selected <- ctry[point,]
-    #proj4string(selected) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-    
-    #proxy <- leafletProxy("mymap")
-    #if(click$id == "Selected"){
-    #  proxy %>% removeShape(layerId = "Selected")
-    #} else {
-    #  proxy %>% addPolygons(data = selected, 
-    #                        fillColor = "black",
-    #                        fillOpacity = 1, 
-    ##                        color = "red",
-    #                        weight = 3, 
-    #                        stroke = T,
-    #                        layerId = "Selected")
-    #} 
-    
-    #addPolylines(leafletProxy("mymap"),lat = c(131,135),lng = c(31,35),color = "red")
-    if(is.null(input$mymap_marker_click)){
-      return()
-    }else{
-      output$msg<-renderText({paste0("bac")})
-      addPolylines(leafletProxy("mymap"),lat = c(0,135),lng = c(0,35),color = "red")
-    }
-    })
+      if(is.null(input$mymap_marker_click)){
+        return()
+        }else{
+          lat1 <- input$mymap_marker_click$lat
+          lon1 <- input$mymap_marker_click$lng
+          
+          lat2 <- mean(filter(dat_temp5(),lat==lat1,lon==lon1)$lat_station,na.rm = T)
+          lon2 <- mean(filter(dat_temp5(),lat==lat1,lon==lon1)$lng_station,na.rm = T)
+          
+          station_name <- filter(dat_temp5(),lat==lat1,lon==lon1)$Station
+      
+          addPolylines(leafletProxy("mymap"),lat = c(lat1,lat2),lng = c(lon1,lon2),color = "red"
+                       ,layerId = "foo")
+      
+        addCircleMarkers(leafletProxy("mymap"),lng=lon2
+                         ,lat=lat2
+                         ,label  = paste0(station_name," Station")
+                         ,labelOptions = labelOptions(noHide = T,direction = 'auto'
+                                                      ,style = list(
+                                                        "color" = "white",
+                                                        #"font-family" = "serif",
+                                                        #"font-style" = "italic",
+                                                        #"box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+                                                        "font-size" = "15px",
+                                                        "border-color" = "rgba(0,0,0,0.5)",
+                                                        "background-color"="black")
+                                                      )
+                         ,color = "red"
+                         ,layerId = "foo2")
+        }
+      }
+      )
   
     
   output$table <- renderDataTable({dat_temp5()},options = list(pageLength = 10))
