@@ -5,9 +5,9 @@ account: s2003493
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3456125
-bundleId: 4121865
+bundleId: 4122215
 url: https://s2003493.shinyapps.io/Japan_Hostel/
-when: 1611155453.57659
+when: 1611161301.12696
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: 00 Data Cleaning.R|00 Data Scraping from Google Map.R|00 Read Data.R|Hostel.csv|Japan_Metro.csv|Japan_Metro_Ori.csv|README.md|Shinny.R|Slide1_Tori.jpg

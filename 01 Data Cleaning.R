@@ -11,7 +11,7 @@ MS_KT<-MS_KT[apply(MS_KT,1,function(X) !any(is.na(X))),]
 MS_FK<-read.csv(paste0(Folder2,"Fukuoka Metro Station.csv"),stringsAsFactors = F)
 MS_FK<-MS_FK[apply(MS_FK,1,function(X) !any(is.na(X))),]
 MS_HS<-read.csv(paste0(Folder2,"Hiroshima Metro Station.csv"),stringsAsFactors = F)
-#MS_HS<-MS_HS[apply(MS_HS,1,function(X) !any(is.na(X))),]
+MS_HS<-MS_HS[apply(MS_HS,1,function(X) !any(is.na(X))),]
 
 
 dat_tk<-filter(dat_hostel,City=="Tokyo")
@@ -116,10 +116,10 @@ dat_temp<-unique(inner_join(dat_temp
                             ,by=c("HostelName","dist")
 ))
 
-#write.csv(dat_temp,paste0(Folder2,"mds_pds_group_f/Japan_Metro.csv"),row.names = F)
+write.csv(dat_temp,"Japan_Metro.csv",row.names = F)
 
 
-dat_metro<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Japan_Metro.csv")
+dat_metro<-dat_temp
 
 dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
 dat_hostel<-filter(dat_hostel,price.from!=1003200)
@@ -147,7 +147,7 @@ dat_hostel <- dat_hostel %>% dplyr::rename(
 
 names(dat_metro)[names(dat_metro)=="dist"]<-"Dist_Station"
 
-dat_hostel2<-left_join(dat_hostel,dat_metro,by="HostelName")
+dat_hostel<-left_join(dat_hostel,dat_metro,by="HostelName")
 
 #write.csv(dat_hostel2,"C:/Users/Gigabyte/Google Drive/04 Master DS/WQD7001 PRINCIPLES OF DATA SCIENCE/Group Assignment/mds_pds_group_f/Hostel_cleaned.csv"
 #          ,row.names = F)

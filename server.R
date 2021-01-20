@@ -222,8 +222,18 @@ server <- shinyServer(function(input,output,session){
               ,legend.text = element_text(size = 20)
               ,plot.title = element_text(size = 30, face = "bold")
         )      
+    }else if(input$Plot_Select=="Distance to Nearest Stations"){
+      ggplot(dat_hostel, aes(y=Dist_Station, x=City,col=City)) + 
+        geom_beeswarm(size=5)+ labs(y = "Distance to Nearest Stations (km)")+
+        ggtitle("Beeswam Plot: Distance to Nearest Stations (km)")+
+        scale_y_log10()+
+        theme(axis.text=element_text(size=20)
+              ,axis.title=element_text(size=30,face="bold")
+              ,legend.title = element_text(size = 20)
+              ,legend.text = element_text(size = 20)
+              ,plot.title = element_text(size = 30, face = "bold")
+        )
     }
-    
   })
-}
+  }
 )

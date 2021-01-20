@@ -65,6 +65,7 @@ ui <- shinyUI(fluidPage(
           tabPanel("Insights"
           , sidebarLayout(sidebarPanel(selectInput("Plot_Select:","Select Plot",c("Starting Price"
                                                                                   ,"Distance to City Centre"
+                                                                                  ,"Distance to Nearest Stations"
                                                                                   ,"Rating Score"
                                                                                   ,"Cleanliness"
                                                                                   ,"Atmosphere"
