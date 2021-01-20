@@ -2,10 +2,15 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 library(ggbeeswarm)
+library(shinyWidgets)
+library(ggplot2)
 
-dat_hostel<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Hostel_cleaned.csv")
+
+#setwd("C:/Users/Gigabyte/Google Drive/04 Master DS/WQD7001 PRINCIPLES OF DATA SCIENCE/Group Assignment/mds_pds_group_f/")
+dat_hostel<-read.csv("Hostel_cleaned.csv")
 
 server <- shinyServer(function(input,output,session){
+
   # City selection
   dat_temp<-reactive({
     if (input$city=="All"){dat_hostel}

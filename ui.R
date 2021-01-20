@@ -1,12 +1,12 @@
 library(shiny)
-library(shinyWidgets)
 library(leaflet)
 library(dplyr)
-library(ggplot2)
 library(ggbeeswarm)
+library(shinyWidgets)
+library(ggplot2)
 
 ui <- shinyUI(fluidPage(
-  setBackgroundImage(src = "https://github.com/william-heng/mds_pds_group_f/blob/main/Cherry%20Blossom%20Japan.jpg?raw=true")
+  setBackgroundImage(src = "Cherry_Blossom_Japan.jpg")
   ,wellPanel(tags$style(".well {background-color:rgba(255,255,255,0.7);}"
                         ,type='text/css',".nav-tabs {font-size: 30px;font-weight: bold;}"
                         ,'.nav-tabs {background-color:rgba(255,182,193,0.8);}'
