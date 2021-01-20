@@ -7,7 +7,7 @@ library(ggplot2)
 
 
 #setwd("C:/Users/Gigabyte/Google Drive/04 Master DS/WQD7001 PRINCIPLES OF DATA SCIENCE/Group Assignment/mds_pds_group_f/")
-dat_hostel<-read.csv("Hostel_cleaned.csv")
+dat_hostel<-read.csv("./Hostel_cleaned.csv")
 
 server <- shinyServer(function(input,output,session){
 

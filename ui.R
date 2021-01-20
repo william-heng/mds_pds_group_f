@@ -5,8 +5,10 @@ library(ggbeeswarm)
 library(shinyWidgets)
 library(ggplot2)
 
+dat_hostel<-read.csv("./Hostel_cleaned.csv")
+
 ui <- shinyUI(fluidPage(
-  setBackgroundImage(src = "Cherry_Blossom_Japan.jpg")
+  setBackgroundImage(src = "https://github.com/william-heng/mds_pds_group_f/blob/main/Cherry_Blossom_Japan.jpg?raw=true")
   ,wellPanel(tags$style(".well {background-color:rgba(255,255,255,0.7);}"
                         ,type='text/css',".nav-tabs {font-size: 30px;font-weight: bold;}"
                         ,'.nav-tabs {background-color:rgba(255,182,193,0.8);}'
