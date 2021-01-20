@@ -6,4 +6,4 @@ This application uses Kaggle dataset on Japan Hostels.
 
 Reference: https://www.kaggle.com/koki25ando/hostel-world-dataset
 
-We have designed a hostel finder app based on several attributes provided in the dataset.
+We have designed a hostel finder app based on several attributes provided in the dataset. Users can search hostels based on their preferences and convenience.
