@@ -3,53 +3,7 @@ library(leaflet)
 library(dplyr)
 library(ggbeeswarm)
 
-dat_hostel<-read.csv(file = "https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Hostel.csv",stringsAsFactors = F)
-dat_metro<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Japan_Metro.csv")
-
-dat_metro_ori<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Japan_Metro_Ori.csv")
-
-dat_hostel<-dat_hostel[apply(dat_hostel,1,function(X) !any(is.na(X))),]
-dat_hostel<-filter(dat_hostel,price.from!=1003200)
-
-dat_hostel$lon[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-135.4756563455386
-dat_hostel$lat[dat_hostel$hostel.name=="Hostel J Culture 168" & dat_hostel$City=="Osaka"]<-34.74883461136703
-
-dat_hostel$lon[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-135.50494191623136
-dat_hostel$lat[dat_hostel$hostel.name=="Sakura Guest House" & dat_hostel$City=="Osaka"]<-34.66842726841171
-
-
-#dat_hostel <- dat_hostel %>% dplyr::rename(
-#  hostel.name=HostelName ,
-#  price.from=StartingPrice ,
-#  rating.band=RatingBand,
-#  summary.score=RatingScore ,
-#  atmosphere=Atmosphere ,
-#  cleanliness=Cleanliness,
-#  facilities=Facilities ,
-#  location.y=Location ,
-#  security=Security ,
-#  staff=Staff,
-#  valueformoney=ValueForMoney 
-#)
-
-dat_hostel <- dat_hostel %>% dplyr::rename(
-  HostelName = hostel.name,
-  StartingPrice = price.from,
-  RatingBand = rating.band,
-  RatingScore = summary.score,
-  Atmosphere = atmosphere,
-  Cleanliness = cleanliness,
-  Facilities = facilities,
-  Location = location.y,
-  Security = security,
-  Staff = staff,
-  ValueForMoney = valueformoney
-)
-
-names(dat_metro)[names(dat_metro)=="dist"]<-"Dist_Station"
-
-dat_hostel<-left_join(dat_hostel,dat_metro,by="HostelName")
-
+dat_hostel<-read.csv("https://raw.githubusercontent.com/william-heng/mds_pds_group_f/main/Hostel_cleaned.csv")
 
 server <- shinyServer(function(input,output,session){
   # City selection
@@ -170,7 +124,8 @@ server <- shinyServer(function(input,output,session){
       )
   
     
-  output$table <- renderDataTable({dat_temp5()},options = list(pageLength = 10))
+  output$table <- renderDataTable({select(dat_temp5(),-lat_station,-lng_station,-lon,-lat,-col)}
+                                  ,options = list(pageLength = 10))
   output$plot <- renderPlot({
     if (input$Plot_Select=="Rating Score"){
     ggplot(dat_hostel, aes(y=RatingScore, x=City,col=City)) + 
