@@ -1,0 +1,77 @@
+
+<style>
+/* Your other css */
+
+.section .reveal .state-background {
+    background: url(https://github.com/william-heng/mds_pds_group_f/blob/main/Slide1_Tori.jpg?raw=true);
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+
+</style>
+
+
+Japan Hostel Finder
+========================================================
+<br>
+<br>
+<br>
+<br>
+Group Members:
+<br>
+<br> Kumanan A/L N Govaichelvan   (17096921)
+<br> Law Chuan Liang              (S2003493)
+<br> Teh Lee Leng                 (S2012133)
+<br> William Heng Chun Meng       (S2005592)
+
+Date: `r format(Sys.time(), '%d %B %Y')`
+
+
+Introduction
+========================================================
+
+[Japan Hostel Finder](https://www.google.com/ ) is an online platform that connects people who is looking for budget accommodation with the room-sharing / bunkbed hostel in Japan.
+
+<font size="6%">
+Goals:
+
+- Helps the users to find hostels based on their budget and preference
+- Helps the users to find a cheaper option
+
+What We Learn:
+
+- We were exposed to the data science project flow and deploy Shiny App.
+- We discovered a more efficient way to search for accommodations. 
+
+</font>
+
+Data Science Process
+========================================================
+
+| Process        | Description |
+|---------------|:-------------:|
+| Asking the right question     | - How do we helps the users to find hostels based on their budget and preference?|
+| Get data                      |- Source 1 : https://www.kaggle.com/koki25ando/hostel-world-dataset [Contains Hostel Prices, Rating and Coordinates] <br> - Source 2 : Scrap Japan Metro Station location from Google Map to add value to the main dataset |
+| Data cleaning                 |- Removed NAs records & outlier <br>- cleaned hostels and metro stations coordinates     |
+| Data processing               | Pair the nearest metro station to the hostels      |
+| Data analysis                 | Descriptive & Exploratory|
+
+========================================================
+
+<div align="center" style="margin-left:-300px;margin-right:-300px; margin-top:-100px;">
+<img src="Demo1.jpg" width=2000 height=800>
+</div>
+
+Features 2: Insights 
+========================================================
+
+<div align="center" style="margin-left:-300px;margin-right:-300px; margin-top:0px;">
+<img src="Demo3.jpg" width=1000 height=400>
+</div>
+
+- Shiny App: https://s2003493.shinyapps.io/Japan_Hostel/
+- Github :https://github.com/william-heng/mds_pds_group_f
+
